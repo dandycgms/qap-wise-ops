@@ -1,19 +1,54 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockAuthService } from '@/mocks/MockAuthService';
-import { Button } from '@/components/ui/button';
-import { Shield, LogOut } from 'lucide-react';
+import { mockConversationService } from '@/mocks/MockConversationService';
 import { toast } from '@/hooks/use-toast';
+import { Conversation } from '@/models';
+import Header from '@/components/policial/Header';
+import ConversationSidebar from '@/components/policial/ConversationSidebar';
+import ChatArea from '@/components/policial/ChatArea';
 
 export default function Policial() {
   const navigate = useNavigate();
   const session = mockAuthService.getSession();
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
 
   useEffect(() => {
     if (!session || session.user.role !== 'POLICIAL') {
       navigate('/login');
+      return;
     }
+    
+    loadConversations();
   }, [session, navigate]);
+
+  const loadConversations = async () => {
+    if (!session) return;
+    
+    try {
+      const convs = await mockConversationService.listar(session.user.id);
+      setConversations(convs);
+      
+      // Se não há conversa ativa e existem conversas, selecionar a primeira aberta
+      if (!activeConversationId && convs.length > 0) {
+        const primeiraAberta = convs.find(c => c.status === 'aberta');
+        if (primeiraAberta) {
+          setActiveConversationId(primeiraAberta.id);
+        }
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao carregar conversas',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleNovaConversa = () => {
+    setActiveConversationId(null);
+  };
 
   const handleLogout = () => {
     mockAuthService.logout();
@@ -28,112 +63,21 @@ export default function Policial() {
 
   return (
     <div className="min-h-screen bg-bg-0">
-      {/* Header */}
-      <header className="h-14 border-b border-border bg-bg-1 px-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Shield className="w-6 h-6 text-accent" />
-          <span className="font-semibold">QAP Total</span>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-text-1">{session.user.nome}</span>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={handleLogout}
-            className="text-text-1 hover:text-text-0"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
-          </Button>
-        </div>
-      </header>
-
-      {/* Layout: Sidebar + Chat */}
+      <Header userName={session.user.nome} onLogout={handleLogout} />
+      
       <div className="flex h-[calc(100vh-3.5rem)]">
-        {/* Sidebar - Histórico */}
-        <aside className="w-72 border-r border-border bg-bg-1 p-4">
-          <h2 className="text-sm font-semibold text-text-1 mb-4">HISTÓRICO</h2>
-          
-          <div className="space-y-2">
-            <div className="p-3 rounded-lg bg-bg-2 border border-border cursor-pointer hover:bg-bg-0 transition-colors">
-              <p className="text-sm font-medium truncate">Abordagem suspeito com arma branca</p>
-              <p className="text-xs text-text-1 mt-1">Há 2 horas • Aberta</p>
-            </div>
-            
-            <div className="p-3 rounded-lg bg-bg-2 border border-border cursor-pointer hover:bg-bg-0 transition-colors opacity-60">
-              <p className="text-sm font-medium truncate">Acidente de trânsito com vítimas</p>
-              <p className="text-xs text-text-1 mt-1">5 dias atrás • Encerrada</p>
-            </div>
-          </div>
-
-          <p className="text-xs text-text-muted mt-6 text-center">
-            Em breve: busca e filtros avançados
-          </p>
-        </aside>
-
-        {/* Chat principal */}
-        <main className="flex-1 flex flex-col">
-          <div className="flex-1 p-6 overflow-y-auto">
-            <div className="max-w-3xl mx-auto space-y-6">
-              {/* Mensagem demo */}
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-sm font-semibold flex-shrink-0">
-                  P
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-text-0">
-                    Indivíduo com faca na praça central, recusando diálogo
-                  </p>
-                  <p className="text-xs text-text-muted mt-1">Há 2 horas</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-bg-2 flex items-center justify-center text-sm flex-shrink-0">
-                  <Shield className="w-4 h-4 text-accent" />
-                </div>
-                <div className="flex-1 bg-bg-1 border border-border rounded-lg p-4">
-                  <p className="text-sm text-text-1 mb-4">
-                    Para prosseguir com segurança, preciso de mais contexto:
-                  </p>
-                  
-                  <div className="space-y-2">
-                    <button className="w-full text-left px-3 py-2 rounded bg-bg-2 hover:bg-bg-0 text-sm transition-colors">
-                      • A pessoa está em local público ou privado?
-                    </button>
-                    <button className="w-full text-left px-3 py-2 rounded bg-bg-2 hover:bg-bg-0 text-sm transition-colors">
-                      • Há outras pessoas em risco imediato?
-                    </button>
-                    <button className="w-full text-left px-3 py-2 rounded bg-bg-2 hover:bg-bg-0 text-sm transition-colors">
-                      • A pessoa apresenta sinais de alteração mental?
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Input area */}
-          <div className="border-t border-border bg-bg-1 p-4">
-            <div className="max-w-3xl mx-auto">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Digite sua mensagem ou clique nas sugestões acima..."
-                  className="flex-1 bg-bg-2 border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  disabled
-                />
-                <Button className="bg-accent hover:bg-accent-hover px-6" disabled>
-                  Enviar
-                </Button>
-              </div>
-              <p className="text-xs text-text-muted text-center mt-2">
-                Chat funcional em desenvolvimento • MOCKs ativos
-              </p>
-            </div>
-          </div>
-        </main>
+        <ConversationSidebar
+          conversations={conversations}
+          activeConversationId={activeConversationId}
+          onSelectConversation={setActiveConversationId}
+          onNovaConversa={handleNovaConversa}
+        />
+        
+        <ChatArea
+          conversationId={activeConversationId}
+          userId={session.user.id}
+          onConversationUpdate={loadConversations}
+        />
       </div>
     </div>
   );

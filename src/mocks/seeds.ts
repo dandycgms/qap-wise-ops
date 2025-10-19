@@ -1,4 +1,6 @@
 import { User, DocumentMeta, Conversation, BrandingConfig, PromptConfig } from '@/models';
+import { AuditEvent } from './MockAuditService';
+import { PolicyConfig } from './MockPolicyService';
 
 export const SUPERADMIN_KEY = 'QAP-SUPER-KEY-0001';
 
@@ -223,5 +225,133 @@ export const seedConversations: Conversation[] = [
     updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     envelopePdfUrl: 'mock://pdf-envelope-demo-2.pdf',
     mensagens: []
+  },
+  {
+    id: 'conv-demo-3',
+    userId: 'pol-1',
+    titulo: 'Violência doméstica — Orientação',
+    status: 'aberta',
+    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    mensagens: []
+  },
+  {
+    id: 'conv-demo-4',
+    userId: 'pol-1',
+    titulo: 'Furto em estabelecimento comercial',
+    status: 'encerrada',
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    envelopePdfUrl: 'mock://pdf-envelope-demo-4.pdf',
+    mensagens: []
+  },
+  {
+    id: 'conv-demo-5',
+    userId: 'pol-2',
+    titulo: 'Porte ilegal de arma — Procedimento',
+    status: 'encerrada',
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    envelopePdfUrl: 'mock://pdf-envelope-demo-5.pdf',
+    mensagens: []
   }
 ];
+
+// ADMINS ADICIONAIS SEED
+export const seedAdmins: User[] = [
+  {
+    id: 'admin-2',
+    nome: 'Roberto Lima',
+    email: 'roberto.lima@qap.gov.br',
+    cpf: '555.555.555-55',
+    role: 'ADMIN',
+    ativo: true,
+    emailConfirmado: true,
+    createdAt: new Date(Date.now() - 120 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 'admin-3',
+    nome: 'Fernanda Costa',
+    email: 'fernanda.costa@qap.gov.br',
+    cpf: '666.666.666-66',
+    role: 'ADMIN',
+    ativo: false,
+    emailConfirmado: true,
+    createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString()
+  }
+];
+
+// EVENTOS DE AUDITORIA SEED
+export const seedAuditEvents: AuditEvent[] = [
+  {
+    id: 'audit-1',
+    tipo: 'LOGIN',
+    userId: 'admin-1',
+    userName: 'Admin Principal',
+    userRole: 'ADMIN',
+    detalhes: 'Login bem-sucedido',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 'audit-2',
+    tipo: 'UPLOAD_DOC',
+    userId: 'admin-1',
+    userName: 'Admin Principal',
+    userRole: 'ADMIN',
+    detalhes: 'Upload: Código Penal Brasileiro.pdf',
+    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 'audit-3',
+    tipo: 'ALTER_PROMPT',
+    userId: 'admin-1',
+    userName: 'Admin Principal',
+    userRole: 'ADMIN',
+    detalhes: 'Prompt de Resposta alterado (v2)',
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 'audit-4',
+    tipo: 'CREATE_USER',
+    userId: 'admin-1',
+    userName: 'Admin Principal',
+    userRole: 'ADMIN',
+    detalhes: 'Usuário criado: ana.costa@pm.gov.br',
+    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 'audit-5',
+    tipo: 'LOGIN',
+    userId: 'superadmin',
+    userName: 'Superadmin',
+    userRole: 'SUPERADMIN',
+    detalhes: 'Login via chave de superadmin',
+    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 'audit-6',
+    tipo: 'CREATE_ADMIN',
+    userId: 'superadmin',
+    userName: 'Superadmin',
+    userRole: 'SUPERADMIN',
+    detalhes: 'Admin criado: roberto.lima@qap.gov.br',
+    timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 'audit-7',
+    tipo: 'RESET_PASSWORD',
+    userId: 'admin-1',
+    userName: 'Admin Principal',
+    userRole: 'ADMIN',
+    detalhes: 'Senha resetada para: joao.santos@pm.gov.br',
+    timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+  }
+];
+
+// POLÍTICAS PADRÃO SEED
+export const seedPolicies: PolicyConfig = {
+  sessionTimeoutMinutes: 480,
+  passwordComplexity: 'media',
+  maxLoginAttempts: 5,
+  rateLimitPerMinute: 60
+};

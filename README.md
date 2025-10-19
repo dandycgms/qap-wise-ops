@@ -4,6 +4,10 @@
 
 **URL**: https://lovable.dev/projects/5153977f-6175-479f-aec6-ba9ea0e5794c
 
+## Node Version
+
+nvm use 22.*
+
 ## How can I edit this code?
 
 There are several ways of editing your application.

@@ -1,0 +1,24 @@
+🔐 Credenciais de Acesso
+
+SUPERADMIN
+Chave: QAP-SUPER-KEY-0001
+Use a aba "Superadmin" na tela de login
+
+ADMIN
+Email: admin@qap.local
+Senha: Admin!123
+
+POLICIAIS (para testar a área de chat)
+
+Ativos:
+
+Email: carlos.silva@pm.gov.br
+Senha: Policial123!
+
+Email: ana.costa@pm.gov.br
+Senha: Policial123!
+
+Inativo (para testar mensagem de erro):
+
+Email: joao.santos@pm.gov.br
+Senha: Policial123!

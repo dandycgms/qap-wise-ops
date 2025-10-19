@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
+import { formatCPF } from '@/lib/utils';
 import { Plus, Search, Edit, Trash2, KeyRound } from 'lucide-react';
 
 export function AdminManagementTable() {
@@ -301,7 +302,7 @@ export function AdminManagementTable() {
               <Input
                 id="cpf"
                 value={formCpf}
-                onChange={(e) => setFormCpf(e.target.value)}
+                onChange={(e) => setFormCpf(formatCPF(e.target.value))}
                 placeholder="000.000.000-00"
                 maxLength={14}
               />

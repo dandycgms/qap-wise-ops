@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from '@/hooks/use-toast';
 import { userService } from '@/service/UserService';
 import { User } from '@/models';
+import { formatCPF } from '@/lib/utils';
 import { Search, UserPlus, Loader2, Power, PowerOff, Users } from 'lucide-react';
 
 export default function UsersTable() {
@@ -201,8 +202,12 @@ export default function UsersTable() {
               <Input
                 id="cpf"
                 value={newUser.cpf}
-                onChange={(e) => setNewUser({ ...newUser, cpf: e.target.value })}
+                onChange={(e) => {
+                  const formattedCPF = formatCPF(e.target.value);
+                  setNewUser({ ...newUser, cpf: formattedCPF });
+                }}
                 placeholder="000.000.000-00"
+                maxLength={14}
               />
             </div>
 

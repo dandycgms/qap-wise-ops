@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { mockPromptService } from '@/mocks/MockPromptService';
+import { promptService } from '@/service/PromptService';
 import { PromptConfig } from '@/models';
 import { Loader2, Save, Info } from 'lucide-react';
 
@@ -23,8 +23,8 @@ export default function PromptEditor() {
     try {
       setLoading(true);
       const [entrada, resposta] = await Promise.all([
-        mockPromptService.obterAtivo('entrada'),
-        mockPromptService.obterAtivo('resposta')
+        promptService.obterAtivo('entrada'),
+        promptService.obterAtivo('resposta')
       ]);
       setPromptEntrada(entrada.conteudo);
       setPromptResposta(resposta.conteudo);
@@ -53,7 +53,7 @@ export default function PromptEditor() {
 
     try {
       setSaving(true);
-      await mockPromptService.salvarNovaVersao(tipo, conteudo);
+      await promptService.salvarNovaVersao(tipo, conteudo);
       toast({
         title: `Prompt de ${tipo} salvo`,
         description: 'Nova versão criada com sucesso'
@@ -96,7 +96,7 @@ export default function PromptEditor() {
           </div>
           <Badge variant="outline" className="gap-1">
             <Info className="w-3 h-3" />
-            {mockPromptService.estimarTokens(promptEntrada)} tokens
+            {promptService.estimarTokens(promptEntrada)} tokens
           </Badge>
         </div>
 
@@ -136,7 +136,7 @@ export default function PromptEditor() {
           </div>
           <Badge variant="outline" className="gap-1">
             <Info className="w-3 h-3" />
-            {mockPromptService.estimarTokens(promptResposta)} tokens
+            {promptService.estimarTokens(promptResposta)} tokens
           </Badge>
         </div>
 

@@ -1,10 +1,11 @@
 import { DocumentMeta, Paginado } from '@/models';
 import { storage, randomLatency, shouldSimulateError, sleep } from '@/utils/storage';
-import { seedDocuments } from './seeds';
+import { seedDocuments } from '../mocks/seeds';
 
-class MockDocumentService {
+class DocumentService {
   private STORAGE_KEY = 'qap_documents';
 
+  /******** /api/document/list  ********/ 
   async listar(
     filtros?: {
       tag?: string;
@@ -46,6 +47,7 @@ class MockDocumentService {
     return { items, page, pageSize, total: docs.length };
   }
 
+  /******** /api/document/upload  ********/ 
   async uploadArquivo(file: File): Promise<DocumentMeta> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao fazer upload' };
@@ -82,40 +84,12 @@ class MockDocumentService {
     storage.set(this.STORAGE_KEY, docs);
 
     // Simular indexação assíncrona
-    this.simularIndexacao(novoDoc.id);
+    await sleep(2000 + Math.random() * 3000);
 
     return novoDoc;
   }
 
-  private async simularIndexacao(docId: string): Promise<void> {
-    // Aguardar 2-5 segundos
-    await sleep(2000 + Math.random() * 3000);
-
-    const docs = storage.get<DocumentMeta[]>(this.STORAGE_KEY, []);
-    const doc = docs.find(d => d.id === docId);
-
-    if (doc) {
-      // 10% chance de erro
-      doc.status = Math.random() < 0.1 ? 'erro' : 'ativo';
-      storage.set(this.STORAGE_KEY, docs);
-    }
-  }
-
-  async atualizar(id: string, dados: Partial<DocumentMeta>): Promise<DocumentMeta> {
-    await randomLatency();
-    if (shouldSimulateError()) throw { status: 500, message: 'Erro ao atualizar documento' };
-
-    const docs = storage.get<DocumentMeta[]>(this.STORAGE_KEY, []);
-    const index = docs.findIndex(d => d.id === id);
-
-    if (index === -1) throw { status: 404, message: 'Documento não encontrado' };
-
-    docs[index] = { ...docs[index], ...dados };
-    storage.set(this.STORAGE_KEY, docs);
-
-    return docs[index];
-  }
-
+  /******** /api/document/activate  ********/ 
   async ativarInativar(id: string, ativo: boolean): Promise<void> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao alterar status' };
@@ -129,6 +103,7 @@ class MockDocumentService {
     storage.set(this.STORAGE_KEY, docs);
   }
 
+  /******** /api/document/reindex  ********/ 
   async reprocessar(id: string): Promise<void> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao reprocessar documento' };
@@ -142,9 +117,10 @@ class MockDocumentService {
     storage.set(this.STORAGE_KEY, docs);
 
     // Simular reindexação
-    this.simularIndexacao(id);
+    
   }
 
+  /******** /api/document/delete  ********/ 
   async remover(id: string): Promise<void> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao remover documento' };
@@ -159,11 +135,7 @@ class MockDocumentService {
     storage.set(this.STORAGE_KEY, filtered);
   }
 
-  obterOrgaosUnicos(): string[] {
-    const docs = storage.get<DocumentMeta[]>(this.STORAGE_KEY, []);
-    return [...new Set(docs.map(d => d.orgao))];
-  }
-
+  /******** /api/document/tags  ********/ 
   obterTagsUnicas(): string[] {
     const docs = storage.get<DocumentMeta[]>(this.STORAGE_KEY, []);
     const todasTags = docs.flatMap(d => d.tags);
@@ -171,4 +143,4 @@ class MockDocumentService {
   }
 }
 
-export const mockDocumentService = new MockDocumentService();
+export const documentService = new DocumentService();

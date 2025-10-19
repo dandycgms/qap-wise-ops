@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
-import { mockAuthService } from '@/mocks/MockAuthService';
+import { authService } from '@/service/AuthService';
 import { Shield } from 'lucide-react';
 
 export default function Login() {
@@ -27,7 +27,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const result = await mockAuthService.login(email, senha);
+      const result = await authService.login(email, senha);
       
       if (result.error) {
         toast({
@@ -70,7 +70,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const result = await mockAuthService.loginSuperadmin(chave);
+      const result = await authService.loginSuperadmin(chave);
       
       if (result.error) {
         toast({
@@ -101,7 +101,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const result = await mockAuthService.primeiroAcesso(emailPrimeiroAcesso);
+      const result = await authService.primeiroAcesso(emailPrimeiroAcesso);
       
       if (result.success) {
         toast({

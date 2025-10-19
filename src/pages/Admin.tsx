@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockAuthService } from '@/mocks/MockAuthService';
+import { authService } from '@/service/AuthService';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Shield, LogOut } from 'lucide-react';
@@ -12,7 +12,7 @@ import UsersTable from '@/components/admin/UsersTable';
 
 export default function Admin() {
   const navigate = useNavigate();
-  const session = mockAuthService.getSession();
+  const session = authService.getSession();
   const [activeTab, setActiveTab] = useState('aparencia');
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function Admin() {
   }, [session, navigate]);
 
   const handleLogout = () => {
-    mockAuthService.logout();
+    authService.logout();
     toast({
       title: 'Logout realizado',
       description: 'Até logo!'
@@ -62,7 +62,6 @@ export default function Admin() {
               <TabsTrigger value="documentos">Documentos (RAG)</TabsTrigger>
               <TabsTrigger value="prompts">Prompts Mestres</TabsTrigger>
               <TabsTrigger value="usuarios">Usuários (Policiais)</TabsTrigger>
-              <TabsTrigger value="relatorios">Relatórios</TabsTrigger>
             </TabsList>
 
             <TabsContent value="aparencia">
@@ -81,11 +80,6 @@ export default function Admin() {
               <UsersTable />
             </TabsContent>
 
-            <TabsContent value="relatorios">
-              <div className="text-center py-12 text-text-1">
-                <p>Relatórios em breve</p>
-              </div>
-            </TabsContent>
           </Tabs>
         </div>
       </main>

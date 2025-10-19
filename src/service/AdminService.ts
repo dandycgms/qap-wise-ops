@@ -1,9 +1,10 @@
 import { User, Paginado } from '@/models';
 import { storage, randomLatency, shouldSimulateError } from '@/utils/storage';
 
-class MockAdminService {
+class AdminService {
   private STORAGE_KEY = 'qap_admins';
 
+  /******** /api/admin/list  ********/ 
   async listar(page = 1, pageSize = 10, query = ''): Promise<Paginado<User>> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao listar admins' };
@@ -25,6 +26,7 @@ class MockAdminService {
     return { items, page, pageSize, total: filtered.length };
   }
 
+  /******** /api/admin/add  ********/ 
   async criar(dados: Omit<User, 'id' | 'createdAt'>): Promise<User> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao criar admin' };
@@ -56,6 +58,7 @@ class MockAdminService {
     return novoAdmin;
   }
 
+  /******** /api/admin/save  ********/ 
   async atualizar(id: string, dados: Partial<User>): Promise<User> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao atualizar admin' };
@@ -71,6 +74,7 @@ class MockAdminService {
     return admins[index];
   }
 
+  /******** /api/admin/delete  ********/ 
   async remover(id: string): Promise<void> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao remover admin' };
@@ -85,6 +89,7 @@ class MockAdminService {
     storage.set(this.STORAGE_KEY, filtered);
   }
 
+  /******** /api/admin/reset-pass  ********/ 
   async resetarSenha(id: string): Promise<void> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao resetar senha' };
@@ -100,4 +105,4 @@ class MockAdminService {
   }
 }
 
-export const mockAdminService = new MockAdminService();
+export const adminService = new AdminService();

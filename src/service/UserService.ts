@@ -1,9 +1,10 @@
 import { User, Paginado, ImportResult } from '@/models';
 import { storage, randomLatency, shouldSimulateError } from '@/utils/storage';
 
-class MockUserService {
+class UserService {
   private STORAGE_KEY = 'qap_users';
 
+  /******** /api/user/list  ********/ 
   async listar(page = 1, pageSize = 10, filtros?: { query?: string; ativo?: boolean }): Promise<Paginado<User>> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao listar usuários' };
@@ -30,6 +31,7 @@ class MockUserService {
     return { items, page, pageSize, total: users.length };
   }
 
+  /******** /api/user/add  ********/ 
   async criar(dados: Omit<User, 'id' | 'createdAt'>): Promise<User> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao criar usuário' };
@@ -59,6 +61,7 @@ class MockUserService {
     return novoUser;
   }
 
+  /******** /api/user/update  ********/ 
   async atualizar(id: string, dados: Partial<User>): Promise<User> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao atualizar usuário' };
@@ -84,6 +87,7 @@ class MockUserService {
     return users[index];
   }
 
+  /******** /api/user/activate  ********/ 
   async ativar(id: string, ativo: boolean): Promise<void> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao alterar status' };
@@ -91,6 +95,7 @@ class MockUserService {
     await this.atualizar(id, { ativo });
   }
 
+  /******** /api/user/reset-pass  ********/ 
   async resetarSenha(id: string): Promise<void> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao resetar senha' };
@@ -106,9 +111,6 @@ class MockUserService {
   }
 
   async importarXlsx(linhas: Array<{ nome: string; email: string; cpf: string }>): Promise<ImportResult> {
-    await randomLatency();
-    if (shouldSimulateError()) throw { status: 500, message: 'Erro ao importar usuários' };
-
     const resultado: ImportResult = {
       total: linhas.length,
       inseridos: 0,
@@ -189,4 +191,4 @@ class MockUserService {
   }
 }
 
-export const mockUserService = new MockUserService();
+export const userService = new UserService();

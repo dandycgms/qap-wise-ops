@@ -8,7 +8,6 @@ class MockPdfService {
 
     // Em produção, usaria uma lib como jsPDF ou pdfmake
     // No mock, simular geração e retornar URL fake
-
     const conteudoPDF = this.montarConteudoHTML(procedimento);
     
     // Criar um blob fake simulando PDF

@@ -1,8 +1,8 @@
 import { PromptConfig } from '@/models';
 import { storage, randomLatency, shouldSimulateError } from '@/utils/storage';
-import { seedPrompts } from './seeds';
+import { seedPrompts } from '../mocks/seeds';
 
-class MockPromptService {
+class PromptService {
   private STORAGE_KEY = 'qap_prompts';
   private initialized = false;
 
@@ -17,6 +17,7 @@ class MockPromptService {
     this.initialized = true;
   }
 
+  /******** /api/prompt/list  ********/ 
   async listarPorTipo(tipo: 'entrada' | 'resposta'): Promise<PromptConfig[]> {
     this.init();
     await randomLatency();
@@ -28,6 +29,8 @@ class MockPromptService {
       .sort((a, b) => b.versao - a.versao); // mais recente primeiro
   }
 
+
+  /******** /api/prompt/get  ********/ 
   async obterAtivo(tipo: 'entrada' | 'resposta'): Promise<PromptConfig> {
     this.init();
     await randomLatency();
@@ -44,6 +47,7 @@ class MockPromptService {
     return porTipo.sort((a, b) => b.versao - a.versao)[0];
   }
 
+  /******** /api/prompt/save  ********/ 
   async salvarNovaVersao(
     tipo: 'entrada' | 'resposta',
     conteudo: string,
@@ -75,28 +79,10 @@ class MockPromptService {
     return novoPrompt;
   }
 
-  async restaurarVersao(id: string): Promise<PromptConfig> {
-    this.init();
-    await randomLatency();
-    if (shouldSimulateError()) throw { status: 500, message: 'Erro ao restaurar versão' };
-
-    const prompts = storage.get<PromptConfig[]>(this.STORAGE_KEY, []);
-    const prompt = prompts.find(p => p.id === id);
-
-    if (!prompt) throw { status: 404, message: 'Prompt não encontrado' };
-
-    // Criar nova versão baseada na anterior
-    return this.salvarNovaVersao(
-      prompt.tipo,
-      prompt.conteudo,
-      `Restaurado da versão ${prompt.versao}`
-    );
-  }
-
   estimarTokens(texto: string): number {
     // Estimativa grosseira: ~4 chars = 1 token
     return Math.ceil(texto.length / 4);
   }
 }
 
-export const mockPromptService = new MockPromptService();
+export const promptService = new PromptService();

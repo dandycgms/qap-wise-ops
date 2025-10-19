@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
-import { mockDocumentService } from '@/mocks/MockDocumentService';
+import { documentService } from '@/service/DocumentService';
 import { DocumentMeta } from '@/models';
 import { Upload, Search, RefreshCw, Trash2, Loader2, FileText, Power, PowerOff } from 'lucide-react';
 
@@ -21,7 +21,7 @@ export default function DocumentsTable() {
   const carregarDocs = async () => {
     try {
       setLoading(true);
-      const data = await mockDocumentService.listar({ query });
+      const data = await documentService.listar({ query });
       setDocs(data.items);
     } catch (error: any) {
       toast({
@@ -43,7 +43,7 @@ export default function DocumentsTable() {
 
     for (let i = 0; i < files.length; i++) {
       try {
-        await mockDocumentService.uploadArquivo(files[i]);
+        await documentService.uploadArquivo(files[i]);
         sucessos++;
       } catch (error: any) {
         erros++;
@@ -65,7 +65,7 @@ export default function DocumentsTable() {
 
   const handleAtivar = async (id: string, ativo: boolean) => {
     try {
-      await mockDocumentService.ativarInativar(id, !ativo);
+      await documentService.ativarInativar(id, !ativo);
       toast({
         title: ativo ? 'Documento desativado' : 'Documento ativado'
       });
@@ -81,7 +81,7 @@ export default function DocumentsTable() {
 
   const handleReprocessar = async (id: string) => {
     try {
-      await mockDocumentService.reprocessar(id);
+      await documentService.reprocessar(id);
       toast({
         title: 'Reprocessamento iniciado',
         description: 'O documento será reindexado'
@@ -100,7 +100,7 @@ export default function DocumentsTable() {
     if (!confirm(`Remover "${titulo}"?`)) return;
 
     try {
-      await mockDocumentService.remover(id);
+      await documentService.remover(id);
       toast({
         title: 'Documento removido'
       });

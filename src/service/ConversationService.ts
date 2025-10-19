@@ -1,9 +1,10 @@
 import { Conversation, ChatMessage } from '@/models';
 import { storage, randomLatency, shouldSimulateError } from '@/utils/storage';
 
-class MockConversationService {
+class ConversationService {
   private STORAGE_KEY = 'qap_conversations';
 
+  /******** /api/chat/list  ********/ 
   async listar(userId: string): Promise<Conversation[]> {
     await randomLatency();
     const conversas: Conversation[] = storage.get(this.STORAGE_KEY, []);
@@ -12,6 +13,7 @@ class MockConversationService {
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }
 
+  /******** /api/chat/create  ********/ 
   async criar(userId: string, primeiraMensagem: string): Promise<Conversation> {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao criar conversa' };
@@ -40,12 +42,14 @@ class MockConversationService {
     return novaConversa;
   }
 
+  /******** /api/chat/get  ********/ 
   async obter(id: string): Promise<Conversation | null> {
     await randomLatency();
     const conversas: Conversation[] = storage.get(this.STORAGE_KEY, []);
     return conversas.find(c => c.id === id) || null;
   }
 
+  /******** /api/chat/add  ********/ 
   async adicionarMensagem(conversationId: string, message: ChatMessage): Promise<void> {
     await randomLatency();
     const conversas: Conversation[] = storage.get(this.STORAGE_KEY, []);
@@ -59,6 +63,7 @@ class MockConversationService {
     storage.set(this.STORAGE_KEY, conversas);
   }
 
+  /******** /api/chat/update  ********/ 
   async atualizar(conversationId: string, updates: Partial<Conversation>): Promise<void> {
     await randomLatency();
     const conversas: Conversation[] = storage.get(this.STORAGE_KEY, []);
@@ -71,4 +76,4 @@ class MockConversationService {
   }
 }
 
-export const mockConversationService = new MockConversationService();
+export const conversationService = new ConversationService();

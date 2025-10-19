@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@/models';
-import { mockAdminService } from '@/mocks/MockAdminService';
+import { adminService } from '@/service/AdminService';
 import { mockPolicyService } from '@/mocks/MockPolicyService';
 import { storage } from '@/utils/storage';
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,7 @@ export function AdminManagementTable() {
   const carregarAdmins = async () => {
     try {
       setLoading(true);
-      const resultado = await mockAdminService.listar(1, 50, query);
+      const resultado = await adminService.listar(1, 50, query);
       setAdmins(resultado.items);
     } catch (error: any) {
       toast({
@@ -50,7 +50,7 @@ export function AdminManagementTable() {
 
   const handleResetarSenha = async (id: string) => {
     try {
-      await mockAdminService.resetarSenha(id);
+      await adminService.resetarSenha(id);
       toast({
         title: 'Senha resetada',
         description: 'Nova senha padrão: Admin!123'
@@ -68,7 +68,7 @@ export function AdminManagementTable() {
     if (!confirm(`Confirma remoção do admin "${nome}"?`)) return;
 
     try {
-      await mockAdminService.remover(id);
+      await adminService.remover(id);
       toast({ title: 'Admin removido com sucesso' });
       carregarAdmins();
     } catch (error: any) {
@@ -145,7 +145,7 @@ export function AdminManagementTable() {
           cpf: formCpf,
           ativo: formAtivo
         };
-        await mockAdminService.atualizar(adminEditando.id, dados);
+        await adminService.atualizar(adminEditando.id, dados);
         
         // Se forneceu senha, atualizar separadamente
         if (formSenha) {
@@ -157,7 +157,7 @@ export function AdminManagementTable() {
         toast({ title: 'Admin atualizado com sucesso' });
       } else {
         // Criar
-        await mockAdminService.criar({
+        await adminService.criar({
           nome: formNome,
           email: formEmail,
           cpf: formCpf,

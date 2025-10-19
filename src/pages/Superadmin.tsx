@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockAuthService } from '@/mocks/MockAuthService';
+import { authService } from '@/service/AuthService';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AdminManagementTable } from '@/components/admin/AdminManagementTable';
@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast';
 
 export default function Superadmin() {
   const navigate = useNavigate();
-  const session = mockAuthService.getSession();
+  const session = authService.getSession();
 
   useEffect(() => {
     if (!session || session.user.role !== 'SUPERADMIN') {
@@ -20,7 +20,7 @@ export default function Superadmin() {
   }, [session, navigate]);
 
   const handleLogout = () => {
-    mockAuthService.logout();
+    authService.logout();
     toast({
       title: 'Logout realizado',
       description: 'Até logo!'

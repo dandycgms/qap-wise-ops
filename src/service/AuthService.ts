@@ -1,6 +1,6 @@
 import { User } from '@/models';
 import { storage, randomLatency, shouldSimulateError } from '@/utils/storage';
-import { seedUsers, SUPERADMIN_KEY } from './seeds';
+import { seedUsers, SUPERADMIN_KEY } from '../mocks/seeds';
 
 interface Session {
   token: string;
@@ -19,7 +19,7 @@ const SESSION_KEY = 'qap_session';
 const ATTEMPTS_KEY = 'qap_login_attempts';
 const PASSWORDS_KEY = 'qap_passwords'; // email -> password hash mock
 
-class MockAuthService {
+class AuthService {
   private initialized = false;
 
   private init() {
@@ -40,6 +40,7 @@ class MockAuthService {
     this.initialized = true;
   }
 
+  /******** /api/session/login  ********/ 
   async login(email: string, senha: string): Promise<{ user?: User; token?: string; error?: string }> {
     this.init();
     await randomLatency();
@@ -93,6 +94,7 @@ class MockAuthService {
     return { user, token };
   }
 
+  /******** /api/session/login-admin  ********/ 
   async loginSuperadmin(chave: string): Promise<{ user?: User; token?: string; error?: string }> {
     await randomLatency();
 
@@ -122,6 +124,7 @@ class MockAuthService {
     return { user: superUser, token };
   }
 
+  /******** /api/session/first-access  ********/ 
   async primeiroAcesso(email: string): Promise<{ success: boolean; error?: string }> {
     this.init();
     await randomLatency();
@@ -144,6 +147,7 @@ class MockAuthService {
     return { success: true };
   }
 
+  /******** /api/session/define-pass  ********/ 
   async definirSenha(tokenEmail: string, novaSenha: string): Promise<{ success: boolean; error?: string }> {
     await randomLatency();
 
@@ -178,6 +182,7 @@ class MockAuthService {
     return { success: true };
   }
 
+  /******** /api/session/logout  ********/ 
   logout(): void {
     storage.remove(SESSION_KEY);
   }
@@ -224,4 +229,4 @@ class MockAuthService {
   }
 }
 
-export const mockAuthService = new MockAuthService();
+export const authService = new AuthService();

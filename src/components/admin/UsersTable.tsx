@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
-import { mockUserService } from '@/mocks/MockUserService';
+import { userService } from '@/service/UserService';
 import { User } from '@/models';
 import { Search, UserPlus, Loader2, Power, PowerOff, Users } from 'lucide-react';
 
@@ -25,7 +25,7 @@ export default function UsersTable() {
   const carregarUsers = async () => {
     try {
       setLoading(true);
-      const data = await mockUserService.listar(1, 10, { query });
+      const data = await userService.listar(1, 10, { query });
       setUsers(data.items);
     } catch (error: any) {
       toast({
@@ -40,7 +40,7 @@ export default function UsersTable() {
 
   const handleToggleAtivo = async (id: string, ativo: boolean) => {
     try {
-      await mockUserService.atualizar(id, { ativo: !ativo });
+      await userService.atualizar(id, { ativo: !ativo });
       toast({
         title: ativo ? 'Usuário desativado' : 'Usuário ativado'
       });
@@ -66,7 +66,7 @@ export default function UsersTable() {
 
     try {
       setSaving(true);
-      await mockUserService.criar({
+      await userService.criar({
         nome: newUser.nome,
         email: newUser.email,
         cpf: newUser.cpf,

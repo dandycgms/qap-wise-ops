@@ -1,7 +1,7 @@
 import { RagChunk, Citation } from '@/models';
 import { storage, randomLatency, shouldSimulateError, sleep } from '@/utils/storage';
-import { mockPromptService } from './MockPromptService';
-import { mockDocumentService } from './MockDocumentService';
+import { promptService } from '../service/PromptService';
+import { documentService } from '../service/DocumentService';
 
 export interface RespostaGerada {
   titulo: string;
@@ -18,7 +18,7 @@ class MockRagService {
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao pré-qualificar' };
 
     // Prompt de entrada seria usado aqui
-    const promptEntrada = await mockPromptService.obterAtivo('entrada');
+    const promptEntrada = await promptService.obterAtivo('entrada');
 
     // Gerar perguntas contextuais baseadas na pergunta inicial
     const perguntas = [
@@ -40,7 +40,7 @@ class MockRagService {
     if (shouldSimulateError()) throw { status: 500, message: 'Erro na busca semântica' };
 
     // Obter documentos ativos
-    const resultado = await mockDocumentService.listar({ 
+    const resultado = await documentService.listar({ 
       status: 'ativo',
       pageSize: 100 
     });
@@ -77,7 +77,7 @@ class MockRagService {
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao gerar resposta' };
 
-    const promptResposta = await mockPromptService.obterAtivo('resposta');
+    const promptResposta = await promptService.obterAtivo('resposta');
 
     // Verificar se há chunks suficientes com score alto
     const chunksRelevantes = chunks.filter(c => c.score > 0.7);
@@ -98,7 +98,7 @@ class MockRagService {
     }
 
     // Obter documentos referenciados
-    const resultado = await mockDocumentService.listar({ pageSize: 100 });
+    const resultado = await documentService.listar({ pageSize: 100 });
     const docs = resultado.items;
 
     const citacoes: Citation[] = chunksRelevantes.map(chunk => {

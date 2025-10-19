@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { ChatMessage } from '@/models';
-import { mockConversationService } from '@/mocks/MockConversationService';
+import { conversationService } from '@/service/ConversationService';
 import { mockAudioService } from '@/mocks/MockAudioService';
 import { mockRagService } from '@/mocks/MockRagService';
 import MessageBubble from './MessageBubble';
@@ -45,7 +45,7 @@ export default function ChatArea({
     if (!conversationId) return;
     
     try {
-      const conversa = await mockConversationService.obter(conversationId);
+      const conversa = await conversationService.obter(conversationId);
       if (conversa) {
         setMessages(conversa.mensagens);
       }
@@ -102,7 +102,7 @@ export default function ChatArea({
       // Criar nova conversa se não existir
       let currentConvId = conversationId;
       if (!currentConvId) {
-        const novaConversa = await mockConversationService.criar(userId, messageContent);
+        const novaConversa = await conversationService.criar(userId, messageContent);
         currentConvId = novaConversa.id;
         onConversationUpdate();
       }
@@ -115,7 +115,7 @@ export default function ChatArea({
         createdAt: new Date().toISOString(),
       };
 
-      await mockConversationService.adicionarMensagem(currentConvId, userMessage);
+      await conversationService.adicionarMensagem(currentConvId, userMessage);
       setMessages(prev => [...prev, userMessage]);
 
       // Processar resposta RAG
@@ -161,7 +161,7 @@ export default function ChatArea({
         )
       );
 
-      await mockConversationService.adicionarMensagem(currentConvId, finalMessage);
+      await conversationService.adicionarMensagem(currentConvId, finalMessage);
 
     } catch (error: any) {
       toast({

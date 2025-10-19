@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockAuthService } from '@/mocks/MockAuthService';
-import { mockConversationService } from '@/mocks/MockConversationService';
+import { authService } from '@/service/AuthService';
+import { conversationService } from '@/service/ConversationService';
 import { toast } from '@/hooks/use-toast';
 import { Conversation } from '@/models';
 import Header from '@/components/policial/Header';
@@ -10,7 +10,7 @@ import ChatArea from '@/components/policial/ChatArea';
 
 export default function Policial() {
   const navigate = useNavigate();
-  const session = mockAuthService.getSession();
+  const session = authService.getSession();
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
@@ -27,7 +27,7 @@ export default function Policial() {
     if (!session) return;
     
     try {
-      const convs = await mockConversationService.listar(session.user.id);
+      const convs = await conversationService.listar(session.user.id);
       setConversations(convs);
       
       // Se não há conversa ativa e existem conversas, selecionar a primeira aberta
@@ -51,7 +51,7 @@ export default function Policial() {
   };
 
   const handleLogout = () => {
-    mockAuthService.logout();
+    authService.logout();
     toast({
       title: 'Logout realizado',
       description: 'Até logo!'

@@ -4,8 +4,21 @@ import { seedPrompts } from './seeds';
 
 class MockPromptService {
   private STORAGE_KEY = 'qap_prompts';
+  private initialized = false;
+
+  private init() {
+    if (this.initialized) return;
+    
+    const prompts = storage.get<PromptConfig[]>(this.STORAGE_KEY, []);
+    if (prompts.length === 0) {
+      storage.set(this.STORAGE_KEY, seedPrompts);
+    }
+    
+    this.initialized = true;
+  }
 
   async listarPorTipo(tipo: 'entrada' | 'resposta'): Promise<PromptConfig[]> {
+    this.init();
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao listar prompts' };
 
@@ -16,6 +29,7 @@ class MockPromptService {
   }
 
   async obterAtivo(tipo: 'entrada' | 'resposta'): Promise<PromptConfig> {
+    this.init();
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao obter prompt ativo' };
 
@@ -35,6 +49,7 @@ class MockPromptService {
     conteudo: string,
     comentario?: string
   ): Promise<PromptConfig> {
+    this.init();
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao salvar prompt' };
 
@@ -61,6 +76,7 @@ class MockPromptService {
   }
 
   async restaurarVersao(id: string): Promise<PromptConfig> {
+    this.init();
     await randomLatency();
     if (shouldSimulateError()) throw { status: 500, message: 'Erro ao restaurar versão' };
 

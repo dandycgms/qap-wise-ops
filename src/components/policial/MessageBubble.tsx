@@ -35,7 +35,7 @@ export default function MessageBubble({
       {/* Conteúdo */}
       <div className={`flex-1 max-w-2xl ${
         isUser 
-          ? 'bg-accent text-white' 
+          ? 'bg-bg-2 text-text-0 border border-border' 
           : 'bg-bg-1 border border-border'
       } rounded-lg p-4`}>
         <p className={`text-sm whitespace-pre-wrap ${

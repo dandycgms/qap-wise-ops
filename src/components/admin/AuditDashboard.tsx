@@ -17,7 +17,7 @@ export function AuditDashboard() {
   const [totalPaginas, setTotalPaginas] = useState(1);
   
   // Filtros
-  const [tipoFiltro, setTipoFiltro] = useState('');
+  const [tipoFiltro, setTipoFiltro] = useState('ALL');
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
   const [usuarioFiltro, setUsuarioFiltro] = useState('');
@@ -36,7 +36,7 @@ export function AuditDashboard() {
 
       // Carregar eventos com filtros
       const filtros: any = {};
-      if (tipoFiltro) filtros.tipo = tipoFiltro;
+      if (tipoFiltro && tipoFiltro !== 'ALL') filtros.tipo = tipoFiltro;
       if (dataInicio) filtros.dataInicio = dataInicio;
       if (dataFim) filtros.dataFim = dataFim;
       if (usuarioFiltro) filtros.usuarioId = usuarioFiltro;
@@ -58,7 +58,7 @@ export function AuditDashboard() {
   const handleExportarCSV = async () => {
     try {
       const filtros: any = {};
-      if (tipoFiltro) filtros.tipo = tipoFiltro;
+      if (tipoFiltro && tipoFiltro !== 'ALL') filtros.tipo = tipoFiltro;
       if (dataInicio) filtros.dataInicio = dataInicio;
       if (dataFim) filtros.dataFim = dataFim;
       if (usuarioFiltro) filtros.usuarioId = usuarioFiltro;
@@ -85,7 +85,7 @@ export function AuditDashboard() {
   };
 
   const limparFiltros = () => {
-    setTipoFiltro('');
+    setTipoFiltro('ALL');
     setDataInicio('');
     setDataFim('');
     setUsuarioFiltro('');
@@ -180,7 +180,7 @@ export function AuditDashboard() {
                   <SelectValue placeholder="Tipo de evento" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="ALL">Todos</SelectItem>
                   <SelectItem value="LOGIN">Login</SelectItem>
                   <SelectItem value="UPLOAD_DOC">Upload Documento</SelectItem>
                   <SelectItem value="ALTER_PROMPT">Alterar Prompt</SelectItem>

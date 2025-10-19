@@ -1,13 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockAuthService } from '@/mocks/MockAuthService';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Shield, LogOut } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import BrandingEditor from '@/components/admin/BrandingEditor';
+import DocumentsTable from '@/components/admin/DocumentsTable';
+import PromptEditor from '@/components/admin/PromptEditor';
+import UsersTable from '@/components/admin/UsersTable';
 
 export default function Admin() {
   const navigate = useNavigate();
   const session = mockAuthService.getSession();
+  const [activeTab, setActiveTab] = useState('aparencia');
 
   useEffect(() => {
     if (!session || session.user.role !== 'ADMIN') {
@@ -49,41 +55,38 @@ export default function Admin() {
       </header>
 
       <main className="p-8">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Área Administrativa</h1>
-          <p className="text-text-1 mb-8">Gerencie documentos, usuários, prompts e aparência.</p>
+        <div className="max-w-7xl mx-auto">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-8">
+              <TabsTrigger value="aparencia">Aparência</TabsTrigger>
+              <TabsTrigger value="documentos">Documentos (RAG)</TabsTrigger>
+              <TabsTrigger value="prompts">Prompts Mestres</TabsTrigger>
+              <TabsTrigger value="usuarios">Usuários (Policiais)</TabsTrigger>
+              <TabsTrigger value="relatorios">Relatórios</TabsTrigger>
+            </TabsList>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-bg-1 border border-border rounded-lg p-6 hover:border-accent transition-colors">
-              <h3 className="font-semibold mb-2">Aparência (Whitelabel)</h3>
-              <p className="text-sm text-text-1 mb-4">Logo, cores e textos da página de login</p>
-              <Button variant="outline" size="sm" disabled>Em breve</Button>
-            </div>
+            <TabsContent value="aparencia">
+              <BrandingEditor />
+            </TabsContent>
 
-            <div className="bg-bg-1 border border-border rounded-lg p-6 hover:border-accent transition-colors">
-              <h3 className="font-semibold mb-2">Documentos (RAG)</h3>
-              <p className="text-sm text-text-1 mb-4">Upload, ativar/inativar, reprocessar</p>
-              <Button variant="outline" size="sm" disabled>Em breve</Button>
-            </div>
+            <TabsContent value="documentos">
+              <DocumentsTable />
+            </TabsContent>
 
-            <div className="bg-bg-1 border border-border rounded-lg p-6 hover:border-accent transition-colors">
-              <h3 className="font-semibold mb-2">Prompts Mestres</h3>
-              <p className="text-sm text-text-1 mb-4">Entrada e resposta com versionamento</p>
-              <Button variant="outline" size="sm" disabled>Em breve</Button>
-            </div>
+            <TabsContent value="prompts">
+              <PromptEditor />
+            </TabsContent>
 
-            <div className="bg-bg-1 border border-border rounded-lg p-6 hover:border-accent transition-colors">
-              <h3 className="font-semibold mb-2">Usuários (Policiais)</h3>
-              <p className="text-sm text-text-1 mb-4">CRUD, importação XLSX, ativar/desativar</p>
-              <Button variant="outline" size="sm" disabled>Em breve</Button>
-            </div>
+            <TabsContent value="usuarios">
+              <UsersTable />
+            </TabsContent>
 
-            <div className="bg-bg-1 border border-border rounded-lg p-6 hover:border-accent transition-colors">
-              <h3 className="font-semibold mb-2">Relatórios</h3>
-              <p className="text-sm text-text-1 mb-4">Uso, consultas, documentos mais citados</p>
-              <Button variant="outline" size="sm" disabled>Em breve</Button>
-            </div>
-          </div>
+            <TabsContent value="relatorios">
+              <div className="text-center py-12 text-text-1">
+                <p>Relatórios em breve</p>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>

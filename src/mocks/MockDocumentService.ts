@@ -75,6 +75,7 @@ class MockDocumentService {
       tipo,
       tamanhoKB: Math.round(file.size / 1024),
       urlArquivoFake: `fake-storage://${file.name}`,
+      createdAt: new Date().toISOString()
     };
 
     docs.push(novoDoc);

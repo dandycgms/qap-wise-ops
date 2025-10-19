@@ -57,7 +57,8 @@ export const seedDocuments: DocumentMeta[] = [
     tags: ['POP', 'abordagem', 'via pública'],
     status: 'ativo',
     tipo: 'PDF',
-    tamanhoKB: 1250
+    tamanhoKB: 1250,
+    createdAt: new Date('2023-03-15').toISOString()
   },
   {
     id: 'doc-2',
@@ -68,7 +69,8 @@ export const seedDocuments: DocumentMeta[] = [
     tags: ['trânsito', 'acidente', 'boletim'],
     status: 'ativo',
     tipo: 'PDF',
-    tamanhoKB: 2340
+    tamanhoKB: 2340,
+    createdAt: new Date('2023-06-20').toISOString()
   },
   {
     id: 'doc-3',
@@ -79,7 +81,8 @@ export const seedDocuments: DocumentMeta[] = [
     tags: ['legislação', 'uso da força', 'direitos humanos'],
     status: 'ativo',
     tipo: 'PDF',
-    tamanhoKB: 340
+    tamanhoKB: 340,
+    createdAt: new Date('2010-12-31').toISOString()
   },
   {
     id: 'doc-4',
@@ -90,7 +93,8 @@ export const seedDocuments: DocumentMeta[] = [
     tags: ['CP', 'patrimônio', 'furto', 'roubo'],
     status: 'ativo',
     tipo: 'PDF',
-    tamanhoKB: 890
+    tamanhoKB: 890,
+    createdAt: new Date('2023-01-01').toISOString()
   },
   {
     id: 'doc-5',
@@ -101,7 +105,8 @@ export const seedDocuments: DocumentMeta[] = [
     tags: ['POP', 'ECA', 'menores'],
     status: 'inativo',
     tipo: 'PDF',
-    tamanhoKB: 670
+    tamanhoKB: 670,
+    createdAt: new Date('2022-11-10').toISOString()
   },
   {
     id: 'doc-6',
@@ -112,7 +117,8 @@ export const seedDocuments: DocumentMeta[] = [
     tags: ['violência doméstica', 'Lei Maria da Penha', 'protocolo'],
     status: 'ativo',
     tipo: 'DOCX',
-    tamanhoKB: 1120
+    tamanhoKB: 1120,
+    createdAt: new Date('2023-08-05').toISOString()
   },
   {
     id: 'doc-7',
@@ -123,7 +129,8 @@ export const seedDocuments: DocumentMeta[] = [
     tags: ['local de crime', 'perícia', 'preservação'],
     status: 'indexando',
     tipo: 'PDF',
-    tamanhoKB: 450
+    tamanhoKB: 450,
+    createdAt: new Date('2021-04-12').toISOString()
   },
   {
     id: 'doc-8',
@@ -134,7 +141,8 @@ export const seedDocuments: DocumentMeta[] = [
     tags: ['flagrante', 'prisão', 'autuação'],
     status: 'erro',
     tipo: 'PDF',
-    tamanhoKB: 1890
+    tamanhoKB: 780,
+    createdAt: new Date('2023-01-20').toISOString()
   }
 ];
 

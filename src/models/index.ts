@@ -35,6 +35,7 @@ export interface DocumentMeta {
   tipo: 'PDF'|'DOCX'|'TXT';
   tamanhoKB: number;
   urlArquivoFake?: string;
+  createdAt: string;
 }
 
 export interface RagChunk {

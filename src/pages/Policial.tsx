@@ -17,6 +17,7 @@ export default function Policial() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isNewConversation, setIsNewConversation] = useState(false);
 
   // Hook para detectar tamanho da tela
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function Policial() {
       setConversations(convs);
       
       // Se não há conversa ativa e existem conversas, selecionar a primeira aberta
-      if (!activeConversationId && convs.length > 0) {
+      if (!activeConversationId && !isNewConversation && convs.length > 0) {
         const primeiraAberta = convs.find(c => c.status === 'aberta');
         if (primeiraAberta) {
           setActiveConversationId(primeiraAberta.id);
@@ -68,6 +69,7 @@ export default function Policial() {
 
   const handleNovaConversa = () => {
     setActiveConversationId(null);
+    setIsNewConversation(true);
     if (isMobile) {
       setIsSidebarOpen(false);
     }
@@ -75,9 +77,16 @@ export default function Policial() {
 
   const handleSelectConversation = (conversationId: string) => {
     setActiveConversationId(conversationId);
+    setIsNewConversation(false);
     if (isMobile) {
       setIsSidebarOpen(false);
     }
+  };
+
+  const handleConversationCreated = (newConversationId: string) => {
+    setActiveConversationId(newConversationId);
+    setIsNewConversation(false);
+    loadConversations();
   };
 
   const handleLogout = () => {
@@ -136,9 +145,11 @@ export default function Policial() {
         </div>
         
         <ChatArea
-          conversationId={activeConversationId}
+          conversationId={isNewConversation ? null : activeConversationId}
           userId={session.user.id}
           onConversationUpdate={loadConversations}
+          //onConversationCreated={handleConversationCreated}
+          //isNewConversation={isNewConversation}
         />
       </div>
     </div>

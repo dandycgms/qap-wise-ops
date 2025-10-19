@@ -148,6 +148,9 @@ export const seedDocuments: DocumentMeta[] = [
 
 export const seedBranding: BrandingConfig = {
   nomeInstancia: 'QAP Total',
+  cores: {
+    accent: '142 71% 45%'
+  },
   textos: {
     headline: 'Suporte inteligente ao procedimento policial',
     subheadline: 'Pesquise normas e POPs, gere passos claros com fontes, e registre o que foi feito.',

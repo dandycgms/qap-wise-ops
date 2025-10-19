@@ -18,12 +18,11 @@ export default function Header({ userName, onLogout }: HeaderProps) {
         <span className="text-sm text-text-1">{userName}</span>
         <Button 
           variant="ghost" 
-          size="sm"
+          size="icon"
           onClick={onLogout}
           className="text-text-1 hover:text-text-0"
         >
-          <LogOut className="w-4 h-4 mr-2" />
-          Sair
+          <LogOut className="w-4 h-4" />
         </Button>
       </div>
     </header>

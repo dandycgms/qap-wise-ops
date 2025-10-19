@@ -27,6 +27,9 @@ export default function ChatArea({
   const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Determinar qual ícone mostrar no botão principal
+  const hasText = inputText.trim().length > 0;
+
   // Carregar mensagens quando conversa muda
   useEffect(() => {
     if (conversationId) {
@@ -174,6 +177,19 @@ export default function ChatArea({
     }
   };
 
+  const handleMainButtonClick = () => {
+    if (isRecording) {
+      // Se está gravando, parar gravação
+      handleToggleRecording();
+    } else if (hasText) {
+      // Se tem texto, enviar mensagem
+      handleSendMessage();
+    } else {
+      // Se não tem texto, iniciar gravação
+      handleToggleRecording();
+    }
+  };
+
   const handlePlayAudio = async (messageId: string) => {
     const message = messages.find(m => m.id === messageId);
     if (!message) return;
@@ -208,6 +224,31 @@ export default function ChatArea({
       setPlayingMessageId(null);
     }
   };
+
+  // Determinar propriedades do botão principal
+  const getButtonProps = () => {
+    if (isRecording) {
+      return {
+        variant: "destructive" as const,
+        icon: MicOff,
+        className: 'animate-pulse'
+      };
+    } else if (hasText) {
+      return {
+        variant: "default" as const,
+        icon: Send,
+        className: 'bg-primary text-primary-foreground hover:bg-primary/90'
+      };
+    } else {
+      return {
+        variant: "outline" as const,
+        icon: Mic,
+        className: ''
+      };
+    }
+  };
+
+  const buttonProps = getButtonProps();
 
   return (
     <main className="flex-1 flex flex-col">
@@ -247,17 +288,6 @@ export default function ChatArea({
       <div className="border-t border-border bg-bg-1 p-4">
         <div className="max-w-3xl mx-auto">
           <div className="flex gap-2">
-            {/* Botão de gravação */}
-            <Button
-              variant={isRecording ? "destructive" : "outline"}
-              size="icon"
-              onClick={handleToggleRecording}
-              disabled={isLoading}
-              className={isRecording ? 'animate-pulse' : ''}
-            >
-              {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-            </Button>
-
             {/* Input de texto */}
             <Input
               value={inputText}
@@ -268,12 +298,15 @@ export default function ChatArea({
               className="flex-1"
             />
 
-            {/* Botão enviar */}
+            {/* Botão principal (Microfone/Enviar) */}
             <Button
-              onClick={() => handleSendMessage()}
-              disabled={!inputText.trim() || isLoading || isRecording}
+              variant={buttonProps.variant}
+              size="icon"
+              onClick={handleMainButtonClick}
+              disabled={isLoading}
+              className={buttonProps.className}
             >
-              <Send className="w-4 h-4" />
+              <buttonProps.icon className="w-4 h-4" />
             </Button>
           </div>
           

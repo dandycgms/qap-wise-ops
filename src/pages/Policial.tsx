@@ -7,12 +7,32 @@ import { Conversation } from '@/models';
 import Header from '@/components/policial/Header';
 import ConversationSidebar from '@/components/policial/ConversationSidebar';
 import ChatArea from '@/components/policial/ChatArea';
+import { Button } from '@/components/ui/button';
+import { Menu, X } from 'lucide-react';
 
 export default function Policial() {
   const navigate = useNavigate();
   const session = authService.getSession();
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Hook para detectar tamanho da tela
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      // Fechar sidebar automaticamente quando virar mobile
+      if (window.innerWidth < 768) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!session || session.user.role !== 'POLICIAL') {
@@ -48,6 +68,16 @@ export default function Policial() {
 
   const handleNovaConversa = () => {
     setActiveConversationId(null);
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  const handleSelectConversation = (conversationId: string) => {
+    setActiveConversationId(conversationId);
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
   };
 
   const handleLogout = () => {
@@ -59,19 +89,51 @@ export default function Policial() {
     navigate('/login');
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   if (!session) return null;
 
   return (
     <div className="min-h-screen bg-bg-0">
       <Header userName={session.user.nome} onLogout={handleLogout} />
       
-      <div className="flex h-[calc(100vh-3.5rem)]">
-        <ConversationSidebar
-          conversations={conversations}
-          activeConversationId={activeConversationId}
-          onSelectConversation={setActiveConversationId}
-          onNovaConversa={handleNovaConversa}
-        />
+      <div className="flex h-[calc(100vh-3.5rem)] relative">
+        {/* Botão do menu mobile */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden absolute top-4 left-4 z-50 bg-bg-1 shadow-md"
+          onClick={toggleSidebar}
+        >
+          {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        </Button>
+
+        {/* Overlay para mobile */}
+        {isMobile && isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-30 transition-opacity"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+        
+        {/* Wrapper da Sidebar */}
+        <div className={`
+          ${isMobile 
+            ? `fixed inset-y-0 left-0 z-40 w-full transform transition-transform duration-300 ease-in-out ${
+                isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+              }`
+            : 'block relative w-80'
+          } h-full
+        `}>
+          <ConversationSidebar
+            conversations={conversations}
+            activeConversationId={activeConversationId}
+            onSelectConversation={handleSelectConversation}
+            onNovaConversa={handleNovaConversa}
+          />
+        </div>
         
         <ChatArea
           conversationId={activeConversationId}

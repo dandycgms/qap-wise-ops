@@ -47,20 +47,24 @@ export default function MessageBubble({
         {/* Botão de áudio (só para assistente) */}
         {!isUser && onPlayAudio && (
           <Button 
-            variant="ghost" 
+            variant={isPlaying ? "destructive" : "outline"} 
             size="sm"
             onClick={() => onPlayAudio(message.id)}
-            className="mt-2 hover:bg-bg-2"
+            className={`mt-3 ${
+              isPlaying 
+                ? 'bg-destructive text-destructive-foreground animate-pulse' 
+                : 'bg-background border-border hover:bg-bg-2 text-accent'
+            }`}
           >
             {isPlaying ? (
               <>
-                <VolumeX className="w-4 h-4 mr-1" />
-                Parar
+                <VolumeX className="w-4 h-4 mr-2" />
+                Parar áudio
               </>
             ) : (
               <>
-                <Volume2 className="w-4 h-4 mr-1" />
-                Ouvir
+                <Volume2 className="w-4 h-4 mr-2" />
+                Ouvir mensagem
               </>
             )}
           </Button>

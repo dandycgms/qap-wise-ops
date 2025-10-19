@@ -19,9 +19,12 @@ export default function ConversationSidebar({
   onNovaConversa
 }: ConversationSidebarProps) {
   return (
-    <aside className="w-72 border-r border-border bg-bg-1 p-4 flex flex-col">
+    <aside className="w-full h-full border-r border-border bg-bg-1 p-4 flex flex-col">
+      {/* Espaço para o botão de fechar no mobile */}
+      <div className="md:hidden h-12 mb-2"></div>
+      
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-text-1">HISTÓRICO</h2>
+        <h2 className="text-sm font-semibold text-text-1 md:ml-0 ml-16">HISTÓRICO</h2>
         <Button size="sm" variant="outline" onClick={onNovaConversa}>
           <Plus className="w-4 h-4 mr-1" />
           Nova

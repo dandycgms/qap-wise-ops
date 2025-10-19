@@ -3,16 +3,35 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { documentService } from '@/service/DocumentService';
 import { DocumentMeta } from '@/models';
-import { Upload, Search, RefreshCw, Trash2, Loader2, FileText, Power, PowerOff } from 'lucide-react';
+import { Upload, Search, RefreshCw, Trash2, Loader2, FileText, Power, PowerOff, Edit3 } from 'lucide-react';
+
+interface EditDocumentData {
+  id: string;
+  titulo: string;
+  topico: string;
+  contexto: string;
+}
+
+// Tipo extendido para incluir tópico e contexto
+interface ExtendedDocumentMeta extends DocumentMeta {
+  topico?: string;
+  contexto?: string;
+}
 
 export default function DocumentsTable() {
-  const [docs, setDocs] = useState<DocumentMeta[]>([]);
+  const [docs, setDocs] = useState<ExtendedDocumentMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [editingDoc, setEditingDoc] = useState<EditDocumentData | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     carregarDocs();
@@ -114,6 +133,60 @@ export default function DocumentsTable() {
     }
   };
 
+  const handleEditDocument = (doc: ExtendedDocumentMeta) => {
+    setEditingDoc({
+      id: doc.id,
+      titulo: doc.titulo,
+      topico: doc.topico || '',
+      contexto: doc.contexto || ''
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveDocument = async () => {
+    if (!editingDoc) return;
+
+    setSaving(true);
+    try {
+      // Atualizar o documento localmente na lista
+      setDocs(prevDocs => 
+        prevDocs.map(doc => 
+          doc.id === editingDoc.id 
+            ? { 
+                ...doc, 
+                topico: editingDoc.topico,
+                contexto: editingDoc.contexto 
+              }
+            : doc
+        )
+      );
+
+      // Aqui você implementará a chamada para salvar o tópico e contexto
+      // await mockDocumentService.atualizarTopicoContexto(editingDoc.id, {
+      //   topico: editingDoc.topico,
+      //   contexto: editingDoc.contexto
+      // });
+
+      toast({
+        title: 'Documento atualizado',
+        description: 'Tópico e contexto salvos com sucesso'
+      });
+      
+      setIsDialogOpen(false);
+      setEditingDoc(null);
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao salvar',
+        description: error.message,
+        variant: 'destructive'
+      });
+      // Reverter a alteração em caso de erro
+      carregarDocs();
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { variant: any; label: string }> = {
       ativo: { variant: 'default', label: 'Ativo' },
@@ -123,6 +196,11 @@ export default function DocumentsTable() {
     };
     const config = variants[status] || variants.inativo;
     return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const truncateTitle = (title: string, maxLength: number = 22) => {
+    if (title.length <= maxLength) return title;
+    return title.substring(0, maxLength) + '...';
   };
 
   return (
@@ -179,6 +257,7 @@ export default function DocumentsTable() {
             <TableHeader>
               <TableRow>
                 <TableHead>Título</TableHead>
+                <TableHead>Tópico</TableHead>
                 <TableHead>Órgão</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Upload</TableHead>
@@ -188,7 +267,12 @@ export default function DocumentsTable() {
             <TableBody>
               {docs.map((doc) => (
                 <TableRow key={doc.id}>
-                  <TableCell className="font-medium">{doc.titulo}</TableCell>
+                  <TableCell className="font-medium" title={doc.titulo}>
+                    {truncateTitle(doc.titulo)}
+                  </TableCell>
+                  <TableCell className="text-sm text-text-muted">
+                    {doc.topico || '-'}
+                  </TableCell>
                   <TableCell>{doc.orgao}</TableCell>
                   <TableCell>{getStatusBadge(doc.status)}</TableCell>
                   <TableCell className="text-sm text-text-1">
@@ -196,6 +280,15 @@ export default function DocumentsTable() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditDocument(doc)}
+                        title="Editar tópico e contexto"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </Button>
+                      
                       {doc.status === 'ativo' && (
                         <Button
                           variant="ghost"
@@ -242,6 +335,79 @@ export default function DocumentsTable() {
           </Table>
         </div>
       )}
+
+      {/* Dialog para editar tópico e contexto */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Editar Documento</DialogTitle>
+          </DialogHeader>
+          
+          {editingDoc && (
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="titulo">Título do Documento</Label>
+                <Input
+                  id="titulo"
+                  value={editingDoc.titulo}
+                  disabled
+                  className="bg-bg-1"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="topico">Tópico</Label>
+                <Input
+                  id="topico"
+                  value={editingDoc.topico}
+                  onChange={(e) => setEditingDoc(prev => 
+                    prev ? { ...prev, topico: e.target.value } : null
+                  )}
+                  placeholder="Digite o tópico do documento..."
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="contexto">Contexto</Label>
+                <Textarea
+                  id="contexto"
+                  value={editingDoc.contexto}
+                  onChange={(e) => setEditingDoc(prev => 
+                    prev ? { ...prev, contexto: e.target.value } : null
+                  )}
+                  placeholder="Digite o contexto adicional do documento..."
+                  rows={4}
+                />
+              </div>
+            </div>
+          )}
+          
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsDialogOpen(false);
+                setEditingDoc(null);
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSaveDocument}
+              disabled={saving}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                'Salvar'
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
